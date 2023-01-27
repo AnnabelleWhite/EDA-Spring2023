@@ -40,7 +40,7 @@ Enter answers to the questions just below the >Answer: prompt.
 1. What are your previous experiences with data analytics, R, and Git? Include both formal and informal training.
 
 > Answer: 
-I took my first course on R in 2016, for "Quantitative Political Methodology", and later used R to analyze data in an experiment I ran in 2018. From 2020-2021, I worked in the NASA Planetary Data System; although my tasks were focused on archival, I was tangentially exposed to data analytics fairly often. My tasks were more on the archival side of things, but I I have since taken ENV 761 and 859, which focused on data analytics and used Git for several assignments.
+I took my first course on R in 2016, for "Quantitative Political Methodology", and later used R to analyze data in an experiment I ran in 2018. From 2020-2021, I worked in the NASA Planetary Data System; although my tasks were focused on archival, I was tangentially exposed to data analytics fairly often. My tasks were more on the archival side of things, but I I have since taken ENV 710, 761, and 859, which focused on data analytics and used Git for several assignments.
 
 2. Are there any components of the course about which you feel confident?
 
