@@ -1,6 +1,6 @@
 ---
 title: "Assignment 2: Coding Basics"
-author: "Student Name"
+author: "Annabelle White"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -32,10 +32,17 @@ This exercise accompanies the lessons in Environmental Data Analytics on coding 
 
 ```{r}
 #1. 
+fours <- seq(from = 1, to = 100, by = 4)
+# I named this sequence "fours" because it increases by four each time
+# It runs from 1 to 100, and increments by 4
 
-#2. 
+#2.
+mean(fours) # Find the mean
+median(fours) # Find the median
 
-#3. 
+#3.
+mean(fours) > median(fours) # Asks R: is the mean greater than the median?
+# If I assert a false statement like this, R will tell me that it's false
 
 ```
 
