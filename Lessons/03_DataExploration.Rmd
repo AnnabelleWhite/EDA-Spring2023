@@ -76,6 +76,7 @@ library(tidyverse)
 Question: What happens in the console when you load a package?
 
 > Answer: 
+Updates in real time to show download.
 
 ### Import your datasets
 

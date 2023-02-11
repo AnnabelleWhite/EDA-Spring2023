@@ -30,7 +30,7 @@ And thus we introduce the `here` package, designed to streamline this process. W
  - Github repo: https://github.com/jennybc/here_here
  
 ```{r The here package}
-#install.packages('here')
+install.packages('here')
 library(here) #Note this package may conflict with plyr and lubridate
 
 #The command `here()` points to the location containing the ".Rrpoj" file, i.e. 
@@ -63,7 +63,10 @@ filenames <- dir(here('Data','Raw'),pattern = ("*.csv"))
 ```{r here in action}
 
 # 1. 
-
+chem <- read.csv(
+  file = here('Data','Raw','NTL-LTER_Lake_ChemistryPhysics_Raw.csv'),
+  stringsAsFactors = T
+)
 
 # 2.
 
