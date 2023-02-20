@@ -87,14 +87,10 @@ glimpse(PM25_2019.raw)
 
 #```{r Wrangle individual datasets}
 
-# I detested doing this step-by-step so I made pipes for each dataset
-# This could be further refined by making an iterative process
-
 ```{r, Wrangle individual datasets}
 
-# I could not stand the redundancy of doing each command 4x in a row
-# So I made pipes for each dataset
-# If I had more time I'd want to make a function and apply it to each
+# I detested doing this step-by-step so I made pipes for each dataset
+# This could be further refined by making an iterative process
 
 O3_2018.processed <- 
   O3_2018.raw %>%
@@ -175,7 +171,7 @@ EPA.air.processed <-
                           "Millbrook School")) %>%
   # You gave me the list of site names so I'm just going to use it
   group_by(Date, Site.Name, AQS_PARAMETER_DESC, COUNTY) %>% # Group by fields
-  summarize(AQI.Mean = mean(DAILY_AQI_VALUE), # Find means of these fields
+  summarise(AQI.Mean = mean(DAILY_AQI_VALUE), # Find means of these fields
             Latitude.Mean = mean(SITE_LATITUDE), # Though it seems foolish
             Longitude.Mean = mean(SITE_LONGITUDE)) %>%
   mutate(Month = lubridate::month(Date),
@@ -188,10 +184,15 @@ EPA.air.processed <-
 # So I'm just going to do it my way and you can take off points if you like
 
 #9
-
+EPA.air.processed <- pivot_wider(EPA.air.processed, 
+                                 names_from = AQS_PARAMETER_DESC,
+                                 values_from = AQI.Mean)
+# This splits AQI.Mean into values for ozone and particulate matter,
+# based on the corresponding values in AQS_PARAMETER_DESC.
+# This flattens each distinct measurement into just one row! Handy!
 
 #10
-glimpse(EPA.air.processed) # Shows dimensions of dataset
+dim(EPA.air.processed) # Shows dimensions of dataset: 8976 x 9
 
 #11
 write.csv(EPA.air.processed, row.names = FALSE, 
@@ -211,12 +212,25 @@ write.csv(EPA.air.processed, row.names = FALSE,
 
 #12
 
+EPA.air.summary <- 
+  EPA.air.processed %>%
+  group_by(Site.Name, Month, Year) %>% # Group by fields
+  summarise(Ozone.Mean = mean(Ozone), # Find means of these fields
+            PM2.5.Mean = mean(PM2.5))  %>%
+  drop_na(Ozone.Mean)
 
 #13
-
+dim(EPA.air.summary) # Shows dimensions: 182 x 5
+# This is a drastic reduction in dimensions
+# But looking at EPA.air.processed shows that the majority of ozone measurements were NA
+# So this is to be expected
 
 ```
 
 14. Why did we use the function `drop_na` rather than `na.omit`?
 
 > Answer: 
+The drop_na function is set up to work with tidyverse and allows us to select
+which variables to drop NA values from. Since we only care about removing NAs 
+from ozone but not PM in this case, it's useful to be able to specify them. The
+na.omit function would have dropped all rows with NA in any column.
