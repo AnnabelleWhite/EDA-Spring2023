@@ -1,0 +1,222 @@
+---
+title: "Assignment 4: Data Wrangling"
+author: "Annabelle White"
+date: "Spring 2023"
+output: pdf_document
+geometry: margin=2.54cm
+---
+
+```{r setup, include=FALSE}
+#This code chunk will tidy your knit PDF files, wrapping long code lines
+#For it to work, the "formatR" package needs to be installed
+
+#install.packages('formatR')
+knitr::opts_chunk$set(tidy.opts=list(width.cutoff=80), tidy=TRUE)
+```
+
+
+## OVERVIEW
+
+This exercise accompanies the lessons in Environmental Data Analytics on Data Wrangling 
+
+## Directions
+
+1.  Rename this file `<FirstLast>_A04_DataWrangling.Rmd` (replacing `<FirstLast>` with your first and last name).
+2. Change "Student Name" on line 3 (above) with your name.
+3. Work through the steps, **creating code and output** that fulfill each instruction.
+4. Be sure to **answer the questions** in this assignment document.
+5. When you have completed the assignment, **Knit** the text and code into a single PDF file.
+
+The completed exercise is due on Friday, Feb 20th @ 5:00pm.
+
+## Set up your session 
+
+1a. Load the `tidyverse`,  `lubridate`, and `here` packages into your session.
+
+1b. Check your working directory.
+
+1c. Read in all four raw data files associated with the EPA Air dataset, being sure to set string columns to be read in a factors. See the README file for the EPA air datasets for more information (especially if you have not worked with air quality data previously). 
+
+2. Apply the `glimpse()` function to reveal the dimensions, column names, and structure of each dataset. 
+
+```{r, message = FALSE}
+#1a 
+pkgs <- c("tidyverse", "lubridate", "here") # I hate repeating the same command
+lapply(pkgs, library, character.only=TRUE) # so I looked up how to load them all at once
+#1b 
+here()
+#1c 
+# This could be done much more efficiently
+# But I'm not yet sure how to ensure stringsAsFactors that way
+O3_2018.raw <- read.csv(
+  file = here('Data','Raw','EPAair_O3_NC2018_raw.csv'),
+  stringsAsFactors = T
+)
+O3_2019.raw <- read.csv(
+  file = here('Data','Raw','EPAair_O3_NC2019_raw.csv'),
+  stringsAsFactors = T
+)
+PM25_2018.raw <- read.csv(
+  file = here('Data','Raw','EPAair_PM25_NC2018_raw.csv'),
+  stringsAsFactors = T
+)
+PM25_2019.raw <- read.csv(
+  file = here('Data','Raw','EPAair_PM25_NC2019_raw.csv'),
+  stringsAsFactors = T
+)
+
+#2 
+# I tried using lapply() to glimpse each one but it went ballistic on me
+# so I guess I'll just do it one by one
+glimpse(O3_2018.raw)
+glimpse(O3_2019.raw)
+glimpse(PM25_2018.raw)
+glimpse(PM25_2019.raw)
+
+```
+
+## Wrangle individual datasets to create processed files.
+
+#3. Change date columns to be date objects.
+
+#4. Select the following columns: Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE
+
+#5. For the PM2.5 datasets, fill all cells in AQS_PARAMETER_DESC with "PM2.5" (all cells in this column should be identical).
+
+#6. Save all four processed datasets in the Processed folder. Use the same file names as the raw files but replace "raw" with "processed".
+
+#```{r Wrangle individual datasets}
+
+# I detested doing this step-by-step so I made pipes for each dataset
+# This could be further refined by making an iterative process
+
+```{r, Wrangle individual datasets}
+
+# I could not stand the redundancy of doing each command 4x in a row
+# So I made pipes for each dataset
+# If I had more time I'd want to make a function and apply it to each
+
+O3_2018.processed <- 
+  O3_2018.raw %>%
+  select(Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, 
+         SITE_LATITUDE, SITE_LONGITUDE) %>% #4
+  mutate(Date = mdy(Date)) #3
+write.csv(O3_2018.processed, row.names = FALSE, 
+          file = here('Data','Processed',
+                      'EPAair_O3_NC2018_processed.csv')) #6
+
+O3_2019.processed <- 
+  O3_2019.raw %>%
+  select(Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, 
+         SITE_LATITUDE, SITE_LONGITUDE) %>% #4
+  mutate(Date = mdy(Date)) #3
+write.csv(O3_2019.processed, row.names = FALSE, 
+          file = here('Data','Processed',
+                      'EPAair_O3_NC2019_processed.csv')) #6
+
+PM25_2018.processed <- 
+  PM25_2018.raw %>%
+  select(Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, 
+         SITE_LATITUDE, SITE_LONGITUDE) %>% #4
+  mutate(Date = mdy(Date)) %>% #3
+  mutate(AQS_PARAMETER_DESC = "PM2.5") #5
+write.csv(PM25_2018.processed, row.names = FALSE, 
+          file = here('Data','Processed',
+                      'EPAair_PM25_NC2018_processed.csv')) #6
+
+PM25_2019.processed <- 
+  PM25_2019.raw %>%
+  select(Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, 
+         SITE_LATITUDE, SITE_LONGITUDE) %>% #4
+  mutate(Date = mdy(Date)) %>% #3
+  mutate(AQS_PARAMETER_DESC = "PM2.5") #5
+write.csv(PM25_2019.processed, row.names = FALSE, 
+          file = here('Data','Processed',
+                      'EPAair_PM25_NC2019_processed.csv')) #6
+
+```
+
+
+## Combine datasets
+
+7. Combine the four datasets with `rbind`. Make sure your column names are identical prior to running this code.
+
+8. Wrangle your new dataset with a pipe function (%>%) so that it fills the following conditions: 
+
+  * Include all sites that the four data frames have in common: "Linville Falls", "Durham Armory", "Leggett", "Hattie Avenue", "Clemmons Middle", "Mendenhall School", "Frying Pan Mountain", "West Johnston Co.", "Garinger High School", "Castle Hayne", "Pitt Agri. Center", "Bryson City", "Millbrook School" (the function `intersect` can figure out common factor levels - but it will include sites with missing site information...) 
+
+  * Some sites have multiple measurements per day. Use the split-apply-combine strategy to generate daily means: group by date, site name, AQS parameter, and county. Take the mean of the AQI value, latitude, and longitude.
+  
+  * Add columns for "Month" and "Year" by parsing your "Date" column (hint: `lubridate` package)
+  
+  * Hint: the dimensions of this dataset should be 14,752 x 9.
+
+9. Spread your datasets such that AQI values for ozone and PM2.5 are in separate columns. Each location on a specific date should now occupy only one row.
+
+10. Call up the dimensions of your new tidy dataset.
+
+11. Save your processed dataset with the following file name: "EPAair_O3_PM25_NC1819_Processed.csv"
+
+```{r Combine datasets}
+#7 
+EPA.air <- rbind(O3_2018.processed, 
+                 O3_2019.processed, 
+                 PM25_2018.processed, 
+                 PM25_2019.processed) # Join the four dataframes
+
+#8 
+EPA.air.processed <- 
+  EPA.air %>%
+  filter(Site.Name %in% c("Linville Falls", "Durham Armory", "Leggett", 
+                          "Hattie Avenue", "Clemmons Middle", 
+                          "Mendenhall School", "Frying Pan Mountain", 
+                          "West Johnston Co.", "Garinger High School", 
+                          "Castle Hayne", "Pitt Agri. Center", "Bryson City", 
+                          "Millbrook School")) %>%
+  # You gave me the list of site names so I'm just going to use it
+  group_by(Date, Site.Name, AQS_PARAMETER_DESC, COUNTY) %>% # Group by fields
+  summarize(AQI.Mean = mean(DAILY_AQI_VALUE), # Find means of these fields
+            Latitude.Mean = mean(SITE_LATITUDE), # Though it seems foolish
+            Longitude.Mean = mean(SITE_LONGITUDE)) %>%
+  mutate(Month = lubridate::month(Date),
+         Year = lubridate::year(Date)) # Add new month & year columns
+
+# I tried for HOURS to use intersect to cleverly filter the site names
+# It does not work that way with joined dataframes
+# And joining, then splitting, then joining again feels incredibly redundant
+# I hate being redundant with my code
+# So I'm just going to do it my way and you can take off points if you like
+
+#9
+
+
+#10
+glimpse(EPA.air.processed) # Shows dimensions of dataset
+
+#11
+write.csv(EPA.air.processed, row.names = FALSE, 
+          file = here('Data','Processed',
+                      'EPAair_O3_PM25_NC1819_Processed.csv'))
+
+```
+
+
+## Generate summary tables
+
+12. Use the split-apply-combine strategy to generate a summary data frame. Data should be grouped by site, month, and year. Generate the mean AQI values for ozone and PM2.5 for each group. Then, add a pipe to remove instances where mean **ozone** values are not available (use the function `drop_na` in your pipe). It's ok to have missing mean PM2.5 values in this result.
+
+13. Call up the dimensions of the summary dataset.
+
+```{r Generate summary tables}
+
+#12
+
+
+#13
+
+
+```
+
+14. Why did we use the function `drop_na` rather than `na.omit`?
+
+> Answer: 

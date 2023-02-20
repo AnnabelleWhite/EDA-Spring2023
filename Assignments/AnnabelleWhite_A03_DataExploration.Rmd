@@ -32,15 +32,14 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Ex
 
 1.  Check your working directory, load necessary packages (tidyverse, lubridate), and upload two datasets: the ECOTOX neonicotinoid dataset (ECOTOX_Neonicotinoids_Insects_raw.csv) and the Niwot Ridge NEON dataset for litter and woody debris (NEON_NIWO_Litter_massdata_2018-08_raw.csv). Name these datasets "Neonics" and "Litter", respectively. Be sure to include the subcommand to read strings in as factors.
 
-```{r,  setup}
+```{r setup,  message = FALSE}
 getwd() # Check working directory
 setwd("C:/Users/ardwh/OneDrive/Documents/NSOE/env872/EDA-Spring2023")
 library(tidyverse)
 library(lubridate) # Load packages
-bugs <- read.csv("Data/Raw/ECOTOX_Neonicotinoids_Insects_raw", stringsAsFactors = T)
-trash <- read.csv("Data/Raw/NIWO_Litter/NEON_NIWO_Litter_massdata_2018-08_raw.csv", stringsAsFactors = T)
-
-# I don't know why it is displaying a "cannot open the connection" error, because it keeps loading the data into R properly. I have been troubleshooting but haven't figured out what the issue is. As long as it correctly loads the data, I'm willing to tolerate a fraduluent error message. Would welcome insight.
+Neonics <- read.csv("Data/Raw/ECOTOX_Neonicotinoids_Insects_raw.csv", stringsAsFactors = T)
+Litter <- read.csv("Data/Raw/NIWO_Litter/NEON_NIWO_Litter_massdata_2018-08_raw.csv", 
+                   stringsAsFactors = T)
 ```
 
 ## Learn about your system
@@ -67,13 +66,13 @@ Litter and woody debris are crucial to cycling nutrients into forest soils via d
 5.  What are the dimensions of the dataset?
 
 ```{r Dimensions of bug data}
-dim(bugs)
+dim(Neonics)
 ```
 
 6.  Using the `summary` function on the "Effect" column, determine the most common effects that are studied. Why might these effects specifically be of interest?
 
 ```{r Effect summary}
-summary(bugs$Effect)
+summary(Neonics$Effect)
 ```
 
 > Answer:
@@ -82,7 +81,7 @@ The most common effects are population (1803 studies) and mortality (1493 studie
 7.  Using the `summary` function, determine the six most commonly studied species in the dataset (common name). What do these species have in common, and why might they be of interest over other insects? Feel free to do a brief internet search for more information if needed.[TIP: The `sort()` command can sort the output of the summary command...]
 
 ```{r Species list}
-sort(summary(bugs$Species.Common.Name))
+sort(summary(Neonics$Species.Common.Name))
 ```
 
 > Answer:
@@ -91,7 +90,7 @@ The most commonly studied are species of bees and wasps. This makes sense, as be
 8.  Concentrations are always a numeric value. What is the class of `Conc.1..Author.` column in the dataset, and why is it not numeric?
 
 ```{r Concentration class}
-class(bugs$Conc.1..Author.)
+class(Neonics$Conc.1..Author.)
 ```
 
 > Answer:
@@ -102,14 +101,14 @@ These data are not numeric because they contain characters such as >, /, and ~, 
 9.  Using `geom_freqpoly`, generate a plot of the number of studies conducted by publication year.
 
 ```{r Test.Location graph}
-ggplot(bugs) + 
-  geom_freqpoly(aes(x = Publication.Year), bins = 25)
+ggplot(Neonics) + 
+  geom_freqpoly(aes(x = Publication.Year), bins = 25) # Looks nicer this way
 ```
 
 10. Reproduce the same graph but now add a color aesthetic so that different Test.Location are displayed as different colors.
 
 ```{r Test.Location colored graph}
-ggplot(bugs) + 
+ggplot(Neonics) + 
   geom_freqpoly(aes(x = Publication.Year, color = Test.Location), bins = 25)
 ```
 
@@ -123,9 +122,9 @@ The most common test locations are in natural field settings and lab settings. W
 [**TIP**: Add `theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))` to the end of your plot command to rotate and align the X-axis labels...]
 
 ```{r Endpoint bar graph}
-ggplot(bugs) +
+ggplot(Neonics) +
 	geom_bar(aes(x = Endpoint)) +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) # Tilt columns so they're legible
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) # Tilt labels
 ```
 
 > Answer:
@@ -138,20 +137,18 @@ The most common endpoints are Lowest Observed Effect Level (LOEL), in which the 
 ```{r Collection dates}
 
 # Fix data type
-class(trash$collectDate) # Not a date; displays as factor (originally)
-summary(trash$collectDate) # To show the date format; it's year-month-day
-trash$collectDate <- ymd(trash$collectDate) # Perform Y/M/D function on the vector
-class(trash$collectDate) # Check class; it's a date!
-
+class(Litter$collectDate) # Not a date; displays as factor (originally)
+summary(Litter$collectDate) # To show the date format; it's year-month-day
+Litter$collectDate <- ymd(Litter$collectDate) # Perform Y/M/D function on the vector
+class(Litter$collectDate) # Check class; it's a date!
 # Check for all unique dates:
-unique(trash$collectDate)
-# Looks like August 2, 16, and 30
+unique(Litter$collectDate)
 ```
 
 13. Using the `unique` function, determine how many plots were sampled at Niwot Ridge. How is the information obtained from `unique` different from that obtained from `summary`?
 
 ```{r Number of plots}
-unique(trash$plotID)
+unique(Litter$plotID)
 ```
 
 > Answer:
@@ -160,19 +157,19 @@ summary() shows the distribution of values in a vector. unique() shows the numbe
 14. Create a bar graph of functionalGroup counts. This shows you what type of litter is collected at the Niwot Ridge sites. Notice that litter types are fairly equally distributed across the Niwot Ridge sites.
 
 ```{r Group bar graph}
-ggplot(trash) +
+ggplot(Litter) +
 	geom_bar(aes(x = functionalGroup)) + 
-  theme(axis.text.x = element_text(angle = 20, vjust = 0.5, hjust=1)) # I think it's easier to read this way
+  theme(axis.text.x = element_text(angle = 20, vjust = 0.5, hjust=1)) # Tilt labels
 ```
 
 15. Using `geom_boxplot` and `geom_violin`, create a boxplot and a violin plot of dryMass by functionalGroup.
 
 ```{r Mass by Group}
-ggplot(trash) +
+ggplot(Litter) +
 	geom_boxplot(aes(x = functionalGroup, y = dryMass, group = cut_width(functionalGroup, 1))) + 
   theme(axis.text.x = element_text(angle = 20, vjust = 0.5, hjust=1)) # we slidin
 
-ggplot(trash) +
+ggplot(Litter) +
 	geom_violin(aes(x = functionalGroup, y = dryMass)) + 
   theme(axis.text.x = element_text(angle = 20, vjust = 0.5, hjust=1))
 ```
