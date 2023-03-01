@@ -22,7 +22,7 @@ Effective data visualization depends on purposeful choices about graph types. Th
 library(tidyverse);library(lubridate);library(here)
 library(ggridges)
 
-here()
+here() # Check workspace; all good
 
 PeterPaul.chem.nutrients <- 
   read.csv(here("Data/Processed_KEY/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv"), stringsAsFactors = TRUE)
