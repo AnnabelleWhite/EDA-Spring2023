@@ -100,7 +100,6 @@ starwars <- theme_base() +
     #complete = TRUE
     )
                
-
 ```
 
 ## Create graphs
