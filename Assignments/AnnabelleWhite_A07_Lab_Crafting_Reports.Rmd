@@ -1,37 +1,46 @@
 ---
 title: 'A07 - Crafting Reports'
-author: "Student_name" 
+author: "Annabelle White" 
 date: "Spring 2023"
 output: pdf_document
+toc: true
 ---
 
 ## Objectives:
 
 1.  More practice with R code chunk options
-1.  Gain proficiency with figures, tables (w/`Kable`) table of contents, etc.
-1.  Debugging knitting issues
+2.  Gain proficiency with figures, tables (w/`Kable`) table of contents, etc.
+3.  Debugging knitting issues
 
 ## Directions
 
 1.  Rename this file `<FirstLast>_A07_CraftingReports.Rmd` (replacing `<FirstLast>` with your first and last name).
-1.  Change "Student Name" on line 3 (above) with your name.
-1.  Work through the tasks, **creating code and output** that fulfill each instruction.
-1.  Be sure your code is tidy; use line breaks to ensure your code fits in the knitted output.
-1.  Be sure to **answer the questions** in this assignment document.
-1.  When you have completed the assignment, **Knit** the text and code into a single PDF file.
-1.  **Be sure that you also commit and push your final Rmd document to your GitHub account**.
+2.  Change "Student Name" on line 3 (above) with your name.
+3.  Work through the tasks, **creating code and output** that fulfill each instruction.
+4.  Be sure your code is tidy; use line breaks to ensure your code fits in the knitted output.
+5.  Be sure to **answer the questions** in this assignment document.
+6.  When you have completed the assignment, **Knit** the text and code into a single PDF file.
+7.  **Be sure that you also commit and push your final Rmd document to your GitHub account**.
 
 ## Task 1 - Basic Markdown
 
 Create a table below summarizing the metadata of the EPA Air Quality data. The first column will be the metadata attribute item name: "Source", "Date", and "Filename". And the second column will include the metadata values: "EPA Air Quality SYstem (AQS)", "2018-2019", and "EPAair_O3_PM25_NC1819_Processed.csv". The first column should be aligned to the right and the second to the left.
 
----
+| Item Name | Value                               |
+|----------:|-------------------------------------|
+|    Source | EPA Air Quality SYstem (AQS)        |
+|      Date | 2018-2019                           |
+|  Filename | EPAair_O3_PM25_NC1819_Processed.csv |
+
+: Table 1: EPA Air Quality metadata
+
+------------------------------------------------------------------------
 
 ## Task 2 - Import packages and data, suppressing messages
 
 Set the following R code chunk so that it runs when knit, but no messages, errors, or any output is shown. The code itself should be displayed.
 
-```{r project.setup}
+```{r project.setup, message = FALSE}
 #Import libraries
 library(tidyverse);library(lubridate);library(here);library(knitr)
 
@@ -42,7 +51,7 @@ epa_data <- read.csv(
   mutate(Date = ymd(Date))
 ```
 
----
+------------------------------------------------------------------------
 
 ## Task 3: Creating tables
 
@@ -73,7 +82,14 @@ summary_Ozone <- epa_data %>%
   arrange(mean_Ozone)
 
 #Use the `kable` function to produce the 2 tables
-
+kable(summary_PM25, # Set dataset
+      col.names = c("County","$\\mu g/m^3$"), # Column names
+      align = c('r','l'), # Align columns
+      caption = "Table 2: Mean Particulates (2.5mm)") # Title table
+kable(summary_Ozone, # Set dataset
+      col.names = c("County","$\\mu g/m^3$"), # Column names
+      align = c('r','l'), # Align columns
+      caption = "Table 3: Mean Ozone") # Title table
 
 ```
 
@@ -83,14 +99,30 @@ summary_Ozone <- epa_data %>%
 
 Create two separate code chunks that create boxplots of the distribution of Ozone levels by month using, one for only records collected in 2018 and one for records in 2019. Customize the chunk options such that the final figures are displayed but not the code used to generate the figures. In addition, the plots aligned on the left side of the page and set the figure heights so both plots fit on the same page with minimal space remaining. Lastly, add a `fig.cap` chunk option to add a caption (title) to your plot that will display underneath the figure.
 
+```{r Ozone 2018, echo = FALSE, fig.align='left', fig.width=10, fig.height=4, fig.cap="Monthly Ozone, 2018"}
+#Make boxplot for monthly ozone in 2018
+boxplot(Ozone ~ Month, 
+        epa_data,
+        epa_data$Year == 2018, #Subset to data from 2018
+        xlab = "Month", 
+        ylab = "Ozone")
+```
 
+```{r Ozone 2019, echo = FALSE, fig.align='left', fig.width = 10, fig.height=4, fig.cap="Monthly Ozone, 2019"}
+#Make boxplot for monthly ozone in 2019
+boxplot(Ozone ~ Month, 
+        epa_data,
+        epa_data$Year == 2019, #Subset to data from 2019
+        xlab = "Month", 
+        ylab = "Ozone")
+```
 
 \newpage
 
 ## Task 4: Knit and submit.
-Add a table of contents to your document and knit to a PDF. Submit your PDF to Sakai, but also be sure to commit and push your Rmd file used to create this knit document to GitHub. In the section below, add a link to your GitHub repository. 
+
+Add a table of contents to your document and knit to a PDF. Submit your PDF to Sakai, but also be sure to commit and push your Rmd file used to create this knit document to GitHub. In the section below, add a link to your GitHub repository.
 
 ### Git Repository
 
-
-
+<https://github.com/AnnabelleWhite/EDA-Spring2023>
