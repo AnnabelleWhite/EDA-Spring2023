@@ -133,6 +133,7 @@ max_withdrawals
 ## 1.4 Construct a dataframe from the data & plot the values
 
 Now that we've scraped the data we want into our coding environment, the next step is to wrangle these data into formats we can work with more easily, i.e. a dataframe. Here, we emply the techniques we've learned earlier in this class to do this and then plot the data. 
+
 ```{r create.dataframe.from.scrapings}
 #Create a dataframe of withdrawals
 df_withdrawals <- data.frame("Month" = rep(1:12),

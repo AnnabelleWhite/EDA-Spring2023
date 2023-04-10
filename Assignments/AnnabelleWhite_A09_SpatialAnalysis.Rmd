@@ -1,6 +1,6 @@
 ---
 title: "Assignment 9: Spatial Analysis in R"
-author: "Student Name"
+author: "Annabelle White"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -31,10 +31,10 @@ This exercise accompanies the lessons in Environmental Data Analytics (ENV872L) 
 
 ```{r Prepare workspace}
 #1. 
-
+library(tidyverse);library(sf);library(leaflet);library(mapview);library(ggplot2)
 
 #2. 
-
+getwd()
 
 ```
 
@@ -48,7 +48,11 @@ In this exercise, we will be exploring stream gage height data in Nebraska corre
 
 ```{r Read the county data into an sf dataframe}
 #3. Read in Counties shapefile into an sf dataframe, filtering for just NE counties
-
+Counties <- st_read('C:/Users/ardwh/OneDrive/Documents/NSOE/env872/EDA-Spring2023/Data/Spatial/cb_2018_us_county_20m.shp')
+mapview(Counties)
+Counties.sf <- Counties %>% 
+  st_as_sf(coords = c('mean_Lng','mean_Lat'),
+           crs=4326)
 
 #4. Reveal the CRS of the counties features
 
